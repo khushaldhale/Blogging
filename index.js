@@ -20,6 +20,17 @@ app.use("/api/v1/auth", authRoutes)
 
 
 
+app.get("/", (req,res)=>
+{
+    res.status(200)
+    .json(
+        {
+            success:true, 
+            message:"This is default route for server zahid, server is up and running smoothly"
+        }
+    )
+})
+
 //global error handler 
 app.use((error, req, res, next)=>
 {
