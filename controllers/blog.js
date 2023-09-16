@@ -4,6 +4,9 @@ const categoryschema=require("../models/category");
 const cathAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler=require("../utils/errorHandler")
 const fileUpload=require("../utils/cloudinary")
+const categoryschema=require("../models/category");
+const userschema=require("../models/user")
+
 
 exports.createBlog=cathAsyncError(
     async(req,res,next)=>
@@ -165,6 +168,102 @@ exports.getUserBlogs=cathAsyncError(
             {
                 success:true, 
                 message:"blogs for particular users are rtetrived succesfully", 
+                data:response
+            }
+        )
+
+    }
+)
+
+// also applied pagination here 
+
+
+//get blogs by category 
+exports.getBlogsByCategory=cathAsyncError(
+    async(req,res,next)=>
+    {
+
+        const {limit, page}=req.params;
+        const skip=(page-1)* limit;
+        const categoryId=req.body.categoryId;
+        if (!categoryId)
+        {
+            return next(new ErrorHandler("please provide Category Id", 404))
+
+        }
+
+        const response=await categoryschema.findById({_id:categoryId}).populate("blogs").skip(skip).limit(limit);
+
+
+        res.status(200)
+        .json(
+            {
+                success:true, 
+                message:"blogs with respect to categories are fetched", 
+                data:response
+            }
+        )
+
+
+    }
+)
+
+// get blogs by author name 
+
+exports.getBlogsByAuthorName=cathAsyncError(
+    async(req,res,next)=>
+    {
+        const authorName=req.body;
+        const {limit, page}=req.params;
+        const skip=(page-1)* limit;
+
+        const arr=authorName.split(" ");
+
+        if(!authorName)
+        {
+            return next(new ErrorHandler("please provide Author name", 404))
+            
+        }
+
+        const response=await userschema.find({$and :[{firstName:{$regex:arr[0]}},{lastName:{$regex:arr[1]}}]}).skip(skip).limit(limit);
+        
+        res.status(200)
+        .json(
+            {
+                success:true, 
+                message:"blogs are retrieved according to the Author Name", 
+                data:response
+            }
+        )
+
+
+
+
+    }
+)
+
+// get blogs by blog title 
+
+
+exports.getBlogsByBlogTitle=cathAsyncError(
+    async(req,res,next)=>
+    {
+        const blogTitle=req.body.blogTitle;
+        const {limit, page}=req.params;
+        const skip=(page-1)* limit;
+        if(!blogTitle)
+        {
+            return next(new ErrorHandler("please provide title of the blog", 404))
+            
+        }
+
+        const response=await blogschema.find({title:blogTitle}).skip(skip).limit(limit);
+
+        res.status(200)
+        .json(
+            {
+                success:true,
+                message:"blogs are retrievd with the help of title", 
                 data:response
             }
         )
