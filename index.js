@@ -8,6 +8,12 @@ app.use(express.json());
 const cookie=require("cookie-parser");
 app.use(cookie())
 
+const cors=require("cors");
+app.use(cors(
+    {
+        origin:process.env.FRONTEND_URL
+    }
+))
 
 
 //db connection 
