@@ -49,7 +49,7 @@ const userschema=new mongoose.Schema(
         profileUrl:{
             type:String
         },
-        isblocked:{
+        isBlocked:{
             type:Boolean,
             default:false
         }, 
